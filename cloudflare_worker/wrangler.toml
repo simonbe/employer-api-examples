@@ -1,0 +1,20 @@
+name = "bitter-wave-4f8f"
+type = "javascript"
+account_id = "f0b4eeeea68e2aaea97a4da9a3945813"
+compatibility_date = "2021-10-09"
+
+# This field specifies that the Worker
+# will be deployed to a *.workers.dev domain
+workers_dev = true
+
+# -- OR --
+
+# These fields specify that the Worker
+# will deploy to a custom domain
+#zone_id = "your-zone-id"
+#routes = ["example.com/*"]
+
+kv_namespaces = [
+  { binding = "TODO", id = "5c84795986144f68a57b78f5b5663d12", preview_id = "13da4612ecea4ffcb38ec140638a3e97" },
+  { binding = "collection", id = "7a3783c69f2141e88391b74dc67c2ae1" }
+]
