@@ -66,10 +66,16 @@ index = 0
 print('collection all')
 coll_type = df_collections['type']
 coll_code = df_collections['code']
+coll_term = df_collections['term']
 coll_orgnrs = df_collections['organization_numbers']
 
 for i, t in enumerate(coll_type):
-    key = 'new_' + t + '_' + coll_code[i]
+    if t in ['city','municipality','country', 'county']:
+        key_rs = coll_term[i].lower()
+    else:
+        key_rs = coll_code[i].lower()
+
+    key = 'new_' + t + '_' + key_rs
     orgnrs = json.loads(coll_orgnrs[i])
     val = {'info': make_info(orgnrs, orgnr2data, table_empl) }
 
