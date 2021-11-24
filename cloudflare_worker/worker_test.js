@@ -151,7 +151,6 @@ addEventListener("fetch", (event) => {
         }
     }
     
-    
     return new Response(JSON.stringify(result), {
         headers: all_headers,
     });
