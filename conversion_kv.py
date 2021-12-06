@@ -9,7 +9,6 @@ import json
 import numpy as np
 import pandas as pd
 
-
 gen_old_coll = False
 
 def make_info(orgnrs, orgnr2data, table_empl):
@@ -38,25 +37,21 @@ def save_upload_part(d, i):
     print('save', i)
 
     if len(d)>0:
-        with open(filepath_out + 'data_to_upload_' + str(i) + '.json','w') as f:
+        with open(filepath_out + 'split_data_' + str(i) + '.json','w') as f:
             json.dump(d, f, indent=2)
 
     print('done')
 
 
-filepath_in = 'input/'
+filepath_in = 'data/'
 filepath_out = 'upload/'
 
 table_empl = pd.read_parquet(filepath_in + 'table_employers.parquet')
 
 df_collections = pd.read_parquet(filepath_in + 'collections.parquet')
 
-data_group_ind = pd.read_parquet(filepath_in + 'collection_group_ind.parquet')
-data_group_occ = pd.read_parquet(filepath_in + 'collection_group_occ.parquet')
-
-# add extra info to collections
+# will add more info to collections in the key-value pairs
 orgnr2data = table_empl.set_index('organization_number').to_dict('index')
-
 
 key2data = []
 
@@ -70,7 +65,7 @@ coll_term = df_collections['term']
 coll_orgnrs = df_collections['organization_numbers']
 
 for i, t in enumerate(coll_type):
-    if t in ['city','municipality','country', 'county']:
+    if t in ['city','municipality','country', 'county', 'industry_group']:
         key_rs = coll_term[i].lower()
     else:
         key_rs = coll_code[i].lower()
@@ -84,70 +79,22 @@ for i, t in enumerate(coll_type):
 
 save_upload_part(key2data, index)
 
-index+=1
-
-
-exit(1)
-
-
-if gen_old_coll:
-    print('collection occupations')
-    i = 0
-    for column in data_group_occ:
-        d = data_group_occ[column]
-        for loc in d.index:
-            if d[loc]!=None:
-                orgnrs = list(d[loc]['organization_numbers'])
-                d[loc]['info'] = make_info(orgnrs, orgnr2data, table_empl)
-                d[loc]['indices'] = '' # remove
-                d[loc]['organization_numbers'] = '' # remove
-
-        key2data.append({"key":"occ_"+column, "value": d.to_json()})
-
-        if i%200==0 and len(key2data)>0:
-            save_upload_part(key2data, index)
-            key2data = []
-            index+=1
-        
-        i+=1
-
-    save_upload_part(key2data, index)
-
-
-    key2data = []
-    index+=1
-
-
-    print('collection industries')
-    for column in data_group_ind:
-        d = data_group_ind[column]
-        for loc in d.index:
-            if d[loc]!=None:
-                orgnrs = list(d[loc]['organization_numbers'])
-                d[loc]['indices'] = '' # remove
-                d[loc]['info'] = make_info(orgnrs, orgnr2data, table_empl)
-                d[loc]['organization_numbers'] = '' # remove
-
-        key2data.append({"key":"ind_"+column, "value": d.to_json()})
-
-    save_upload_part(key2data, index)
-
-
-    
 key2data = []
 index+=1
 
 # 2. table
-split_size = 8000
+split_size = 10000
 
 for i,d in table_empl.iterrows():
-    key2data.append({"key":str(d['organization_number']), "value": d.to_json() })
+
     if i>0 and i%split_size == 0:
 
         save_upload_part(key2data, index)
     
         index+=1
         key2data = []
+
+    key2data.append({"key":str(d['organization_number']), "value": d.to_json() })
 
 save_upload_part(key2data, index)
 
