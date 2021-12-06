@@ -1,0 +1,10 @@
+name = "employer"
+type = "javascript"
+compatibility_date = "2021-12-01"
+workers_dev = true
+
+account_id = ""
+
+kv_namespaces = [
+  { binding = "EMPLOYER", id = "" }
+]

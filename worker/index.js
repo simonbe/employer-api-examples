@@ -106,7 +106,7 @@ async function handleRequest(request) {
             let key = is_orgnr ? params[p] : 'new_' + p + '_' + decodeURIComponent(params[p])
 
             console.log('key: ' + key)
-            gets.push(COLLECTION.get(key, { type: "json" }))
+            gets.push(EMPLOYER.get(key, { type: "json" }))
         }
 
         let vals = await Promise.all(gets);

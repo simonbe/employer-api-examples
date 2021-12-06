@@ -1,5 +1,5 @@
 '''
-Converts parts of employer dataset to key-values.
+Converts employer dataset to key-values.
 - Adds more information to lists with organization numbers.
 - Saves as jsons.
 '''
@@ -9,7 +9,9 @@ import json
 import numpy as np
 import pandas as pd
 
-gen_old_coll = False
+filepath_in = '../data/'
+filepath_out = 'upload/'
+
 
 def make_info(orgnrs, orgnr2data, table_empl):
     res = []
@@ -25,10 +27,13 @@ def make_info(orgnrs, orgnr2data, table_empl):
         name = employer['name']
         
         est_growth = -1
+        est_size_class = -1
         if 'est_growth' in employer and 'months_12' in employer['est_growth']:
             est_growth = employer['est_growth']['months_12']
-        
-        res.append([str(nr), employer['name'],est_growth])
+        if 'est_size_class' in employer:
+            est_size_class = employer['est_size_class']
+
+        res.append([str(nr), employer['name'], est_growth, est_size_class]) # add more info to collection
 
     return res
 
@@ -43,14 +48,9 @@ def save_upload_part(d, i):
     print('done')
 
 
-filepath_in = 'data/'
-filepath_out = 'upload/'
-
 table_empl = pd.read_parquet(filepath_in + 'table_employers.parquet')
-
 df_collections = pd.read_parquet(filepath_in + 'collections.parquet')
 
-# will add more info to collections in the key-value pairs
 orgnr2data = table_empl.set_index('organization_number').to_dict('index')
 
 key2data = []
