@@ -117,4 +117,5 @@ dmypy.json
 # Pyre type checker
 .pyre/
 *.parquet
-*.json
+worker/upload/*.json
+data/*.json
